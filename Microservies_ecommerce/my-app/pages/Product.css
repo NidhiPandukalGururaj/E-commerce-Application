@@ -1,0 +1,29 @@
+/* ProductDetails.css */
+.product {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .product-title {
+    margin-top: 0;
+    color: #333;
+  }
+  
+  .product-description {
+    color: #666;
+  }
+  
+  .product-price {
+    color: #007BFF;
+    font-weight: bold;
+  }
+  
+  .product-stock {
+    color: #28A745;
+    font-weight: bold;
+  }
+  
