@@ -1,47 +1,50 @@
-// app.js
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const Cart = require('./CartModel');
+const cors = require('cors');
+const Cart = require('./model'); // Correct import
 
 const app = express();
+
+app.use(cors());
+app.options('*', cors());
 app.use(bodyParser.json());
 
-// MongoDB connection string
 mongoose.connect('mongodb://localhost/cartService', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 
-// Add item to cart
 app.post('/cart/:userId', async (req, res) => {
   const { userId } = req.params;
   const { productId, quantity } = req.body;
 
+  console.log('Received request to add item to cart:', { userId, productId, quantity }); // Debug log
+
   try {
     let cart = await Cart.findOne({ userId });
+
     if (!cart) {
-      cart = new Cart({ userId, items: [{ productId, quantity }] });
-    } else {
-      let itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
-      if (itemIndex > -1) {
-        // If the product exists in the cart, update the quantity
-        let item = cart.items[itemIndex];
-        item.quantity += quantity;
-        cart.items[itemIndex] = item;
-      } else {
-        // If the product does not exist in the cart, add new item
-        cart.items.push({ productId, quantity });
-      }
+      cart = new Cart({ userId });
     }
+
+    const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+    if (itemIndex > -1) {
+      cart.items[itemIndex].quantity += quantity;
+    } else {
+      cart.items.push({ productId, quantity });
+    }
+
     await cart.save();
+
+    console.log('Successfully saved cart:', cart); // Debug log
     res.status(200).send(cart);
   } catch (error) {
-    res.status(500).send(error);
+    console.error('Error adding to cart:', error.message);
+    res.status(500).send(error.message);
   }
 });
 
-// Get cart items
 app.get('/cart/:userId', async (req, res) => {
   try {
     const cart = await Cart.findOne({ userId: req.params.userId });
@@ -50,11 +53,10 @@ app.get('/cart/:userId', async (req, res) => {
     }
     res.status(200).send(cart);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 });
 
-// Remove item from cart
 app.delete('/cart/:userId/items/:itemId', async (req, res) => {
   const { userId, itemId } = req.params;
 
@@ -67,11 +69,13 @@ app.delete('/cart/:userId/items/:itemId', async (req, res) => {
     await cart.save();
     res.status(200).send(cart);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
   console.log(`Cart service listening on port ${PORT}`);
 });
+
+module.exports = Cart;

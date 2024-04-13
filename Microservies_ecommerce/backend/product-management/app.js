@@ -1,11 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { Product } = require('./models');
+const bodyParser = require('body-parser');
+const { Product } = require('./model');
+const Cart = require('./Cart/model'); // Assuming you have a cart model defined
 
 const app = express();
+
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
 mongoose.connect('mongodb://localhost:27017/productManagement', {
   useNewUrlParser: true,
@@ -23,31 +26,42 @@ app.post('/products', async (req, res) => {
   }
 });
 
-// GET route to list all products
+// GET route to list all products for a specific user
 app.get('/products', async (req, res) => {
+  const { userId } = req.query;
   try {
-    const products = await Product.find({});
+    const products = await Product.find({ userId });
     res.status(200).send(products);
   } catch (error) {
     res.status(500).send(error);
   }
 });
 
-// GET route to fetch a specific product by ID
-app.get('/products/:id', async (req, res) => {
+// POST route to add or update items in the cart
+app.post('/cart', async (req, res) => {
+  const { userId, productId, quantity } = req.body;
   try {
-    const { id } = req.params;
-    const product = await Product.findById(id);
-    if (!product) {
-      return res.status(404).send();
+    let cart = await Cart.findOne({ userId });
+    if (!cart) {
+      cart = new Cart({ userId, items: [{ productId, quantity }] });
+    } else {
+      let itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+      if (itemIndex > -1) {
+        cart.items[itemIndex].quantity += quantity;
+      } else {
+        cart.items.push({ productId, quantity });
+      }
     }
-    res.status(200).send(product);
+    await cart.save();
+    res.status(200).send(cart);
   } catch (error) {
     res.status(500).send(error);
   }
 });
 
-const port = 3001; // Consider running this on a different port if your user management service is on 3000
+// Other routes...
+
+const port = 3002;
 app.listen(port, () => {
   console.log(`Product management service listening on port ${port}`);
 });
