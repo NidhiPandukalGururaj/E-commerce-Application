@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Link from 'next/link';
 
 function Cart() {
     const [cartItems, setCartItems] = useState([]);
@@ -57,7 +58,9 @@ function Cart() {
                     ))}
                 </ul>
             )}
-            <button onClick={() => alert('Proceed to payment')}>Checkout</button>
+            <Link href="/Payment">
+                <button>Checkout</button>
+            </Link>
         </div>
     );
 }

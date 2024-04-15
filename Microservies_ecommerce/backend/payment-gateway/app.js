@@ -2,7 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const Payment = require('./PaymentModel');
+const Payment = require('./model');
 
 const app = express();
 app.use(bodyParser.json());
@@ -31,7 +31,7 @@ app.post('/payment', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
   console.log(`Payment service listening on port ${PORT}`);
 });

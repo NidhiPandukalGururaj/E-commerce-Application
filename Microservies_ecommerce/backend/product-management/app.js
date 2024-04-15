@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Product } = require('./model');
-const Cart = require('./Cart/model'); // Assuming you have a cart model defined
+const Cart = require('../cart/model'); // Assuming you have a cart model defined
 
 const app = express();
 
@@ -28,9 +28,8 @@ app.post('/products', async (req, res) => {
 
 // GET route to list all products for a specific user
 app.get('/products', async (req, res) => {
-  const { userId } = req.query;
   try {
-    const products = await Product.find({ userId });
+    const products = await Product.find(); // Fetch all products
     res.status(200).send(products);
   } catch (error) {
     res.status(500).send(error);

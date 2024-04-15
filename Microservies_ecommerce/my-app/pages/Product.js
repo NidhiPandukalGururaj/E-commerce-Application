@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Link from 'next/link';
 
 function Product() {
   const [products, setProducts] = useState([]);
@@ -68,17 +69,28 @@ function Product() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="product-list-container">
-      <h2 className="heading">Product List</h2>
-      <ul className="product-grid">
-        {products.map((product) => (
-          <li key={product.product_id} className="product-item">
-            <div>
-              <h3>{product.name}</h3>
-              <p>Price: Rs. {product.price}</p>
-              <p>Description: {product.description}</p>
-              <p>Stock: {product.inStock ? 'Available' : 'Out of Stock'}</p>
-              <div>
+    <div className="container">
+      <nav className="w-full flex justify-between p-4 bg-chocolate text-chocolate z-50">
+        <div className="text-xxl font-bold">My E-Commerce</div>
+        <div className="text-xxl font-bold flex space-x-4">
+          <Link href="/" className="hover:underline">Home Page</Link>
+
+          <Link href="/Cart" className="hover:underline">Cart</Link>
+          
+        </div>
+      </nav>
+      <div className="product-list-container">
+        <h1 className="heading text-center">Product List</h1>
+        <div className="product-grid">
+          {products.map((product) => (
+            <div key={product.product_id} className="product-item">
+              <div className="product-details">
+                <h3>{product.name}</h3>
+                <p>Price: Rs. {product.price}</p>
+                <p>Description: {product.description}</p>
+                <p>Stock: {product.inStock ? 'Available' : 'Out of Stock'}</p>
+              </div>
+              <div className="product-actions">
                 <input
                   type="number"
                   min="1"
@@ -88,12 +100,57 @@ function Product() {
                 <button onClick={() => addToCart(product.product_id)}>Add to Cart</button>
               </div>
             </div>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      </div>
       {/* CSS styles */}
       <style jsx>{`
-        /* CSS styles here */
+        .container {
+          text-align: center;
+        }
+
+        .heading {
+          font-size: 2rem;
+        }
+
+        .product-list-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          height: 100vh;
+        }
+
+        .product-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .product-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border: 1px solid #ccc;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-details {
+          flex: 1;
+          margin-right: 20px;
+        }
+
+        .product-actions {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        /* Additional styles for the navbar */
+        /* ... */
+
       `}</style>
     </div>
   );
