@@ -17,9 +17,9 @@ mongoose.connect('mongodb://localhost/cartService', {
 
 app.post('/cart/:userId', async (req, res) => {
   const { userId } = req.params;
-  const { productId, quantity } = req.body;
+  const { productId, quantity ,name,description, price, imageUrl} = req.body;
 
-  console.log('Received request to add item to cart:', { userId, productId, quantity }); // Debug log
+  console.log('Received request to add item to cart:', { userId, productId, quantity, name,price }); // Debug log
 
   try {
     let cart = await Cart.findOne({ userId });
@@ -32,7 +32,7 @@ app.post('/cart/:userId', async (req, res) => {
     if (itemIndex > -1) {
       cart.items[itemIndex].quantity += quantity;
     } else {
-      cart.items.push({ productId, quantity });
+      cart.items.push({ productId, quantity, name, description, price, imageUrl });
     }
 
     await cart.save();
@@ -44,6 +44,7 @@ app.post('/cart/:userId', async (req, res) => {
     res.status(500).send(error.message);
   }
 });
+
 
 app.get('/cart/:userId', async (req, res) => {
   try {
@@ -68,6 +69,20 @@ app.delete('/cart/:userId/items/:itemId', async (req, res) => {
     cart.items = cart.items.filter(item => item._id.toString() !== itemId);
     await cart.save();
     res.status(200).send(cart);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+app.delete('/cart/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const cart = await Cart.findOneAndDelete({ userId });
+    if (!cart) {
+      return res.status(404).send('Cart not found');
+    }
+    res.status(200).send('Cart deleted successfully');
   } catch (error) {
     res.status(500).send(error.message);
   }

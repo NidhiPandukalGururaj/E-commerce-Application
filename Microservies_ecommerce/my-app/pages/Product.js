@@ -36,18 +36,23 @@ function Product() {
       .finally(() => setLoading(false));
   }, []);
 
-  const addToCart = async (productId) => {
+  const addToCart = async (product) => {
     try {
-      if (!quantity[productId]) {
+      if (!quantity[product.product_id]) {
         throw new Error('Quantity not found');
       }
       const response = await axios.post(`http://localhost:3003/cart/${userId}`, {
-        productId,
-        quantity: quantity[productId],
+        productId: product.product_id,
+        quantity: quantity[product.product_id],
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.img_url,
       });
       const updatedCart = response.data.items;
       localStorage.setItem('cartItems', JSON.stringify(updatedCart));
       setCart(updatedCart);
+      alert('Item added to cart successfully');
     } catch (error) {
       console.error('Error adding to cart:', error);
       if (error.response) {
@@ -58,7 +63,7 @@ function Product() {
       }
     }
   };
-  
+
   const handleQuantityChange = (productId, value) => {
     const newQuantity = { ...quantity };
     newQuantity[productId] = value;
@@ -71,12 +76,10 @@ function Product() {
   return (
     <div className="container">
       <nav className="w-full flex justify-between p-4 bg-chocolate text-chocolate z-50">
-        <div className="text-xxl font-bold">My E-Commerce</div>
+        <div className="text-xxl font-bold">GadgetHub</div>
         <div className="text-xxl font-bold flex space-x-4">
           <Link href="/" className="hover:underline">Home Page</Link>
-
           <Link href="/Cart" className="hover:underline">Cart</Link>
-          
         </div>
       </nav>
       <div className="product-list-container">
@@ -84,8 +87,9 @@ function Product() {
         <div className="product-grid">
           {products.map((product) => (
             <div key={product.product_id} className="product-item">
-              <div className="product-details">
+              <div className="d-flex justify-content-between align-items-center">
                 <h3>{product.name}</h3>
+                <img src={product.img_url} alt={product.name} className="product-image" />
                 <p>Price: Rs. {product.price}</p>
                 <p>Description: {product.description}</p>
                 <p>Stock: {product.inStock ? 'Available' : 'Out of Stock'}</p>
@@ -97,7 +101,7 @@ function Product() {
                   value={quantity[product.product_id] || 1}
                   onChange={(e) => handleQuantityChange(product.product_id, parseInt(e.target.value))}
                 />
-                <button onClick={() => addToCart(product.product_id)}>Add to Cart</button>
+                <button onClick={() => addToCart(product)}>Add to Cart</button>
               </div>
             </div>
           ))}
@@ -107,6 +111,10 @@ function Product() {
       <style jsx>{`
         .container {
           text-align: center;
+          background-color: lightyellow;
+          padding: 20px;
+          min-height: 100vh;
+          border: 2px;
         }
 
         .heading {
@@ -118,17 +126,21 @@ function Product() {
           justify-content: center;
           align-items: center;
           flex-direction: column;
-          height: 100vh;
+          width: 100%;
+          padding: 20px;
         }
 
         .product-grid {
-          display: flex;
-          flex-direction: column;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
           gap: 20px;
+          width: 100%;
+          max-width: 1200px;
         }
 
         .product-item {
           display: flex;
+          flex-direction: column;
           justify-content: space-between;
           align-items: center;
           border: 1px solid #ccc;
@@ -139,17 +151,23 @@ function Product() {
 
         .product-details {
           flex: 1;
-          margin-right: 20px;
+          margin-top: 20px;
+          text-align: center; // Center align the images
         }
 
         .product-actions {
           display: flex;
           flex-direction: column;
           align-items: center;
+          margin-top: 20px;
         }
 
-        /* Additional styles for the navbar */
-        /* ... */
+        .product-image {
+          max-width: 100px;
+          align: center;
+          height: auto;
+          margin-bottom: 10px;
+        }
 
       `}</style>
     </div>

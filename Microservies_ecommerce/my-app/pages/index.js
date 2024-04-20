@@ -9,14 +9,14 @@ export default function Home() {
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 bg-cover bg-no-repeat bg-center text-chocolate text-center${inter.className}`}
       style={{ 
-        backgroundImage: `url('/eCommerce-Cartoon.png')`,
+        backgroundImage: `url('/gad.jpeg')`,
         fontSize: '2rem',
         fontFamily: 'Inter, sans-serif',
       }}
     >
       {/* Navbar */}
       <nav className="w-full flex justify-between p-4 bg-chocolate text-chocolate z-50">
-        <div className="text-xxl font-bold">My E-Commerce</div>
+        <div className="text-xxl font-bold">GadgetHub</div>
         <div className="text-xxl font-bold flex space-x-4">
           <Link href="/Register" className="hover:underline">Register</Link>
           <Link href="/login" className="hover:underline">Login</Link>
@@ -27,7 +27,7 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="flex flex-col items-center  text-center z-10 h-full">
-        <h1 className="text-6xl font-bold text-chocolate">Welcome to Our Shop!</h1>
+        <h1 className="text-6xl font-bold text-chocolate">Welcome to GadgetHub!</h1>
         <p className="text-2xl text-gray-600">Discover the best products for you</p>
       </div>
 

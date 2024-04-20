@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Product } = require('./model');
-const Cart = require('../cart/model'); // Assuming you have a cart model defined
+const Cart = require('../cart/model');
 
 const app = express();
 
@@ -15,7 +15,6 @@ mongoose.connect('mongodb://localhost:27017/productManagement', {
   useUnifiedTopology: true,
 });
 
-// POST route to add a new product
 app.post('/products', async (req, res) => {
   try {
     const product = new Product(req.body);
@@ -26,39 +25,56 @@ app.post('/products', async (req, res) => {
   }
 });
 
-// GET route to list all products for a specific user
 app.get('/products', async (req, res) => {
   try {
-    const products = await Product.find(); // Fetch all products
+    const products = await Product.find();
     res.status(200).send(products);
   } catch (error) {
     res.status(500).send(error);
   }
 });
 
-// POST route to add or update items in the cart
-app.post('/cart', async (req, res) => {
-  const { userId, productId, quantity } = req.body;
+app.post('/cart/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { productId, quantity, name, description, price, imageUrl } = req.body;
   try {
+    const product = await Product.findOne({ product_id: productId });
+    if (!product) {
+      return res.status(404).send({ message: 'Product not found' });
+    }
+
     let cart = await Cart.findOne({ userId });
     if (!cart) {
-      cart = new Cart({ userId, items: [{ productId, quantity }] });
+      cart = new Cart({ userId, items: [{ 
+        productId, 
+        quantity, 
+        name,
+        description,
+        price,
+        imageUrl
+      }] });
     } else {
-      let itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+      let itemIndex = cart.items.findIndex(item => item.productId.toString() === productId.toString());
       if (itemIndex > -1) {
         cart.items[itemIndex].quantity += quantity;
       } else {
-        cart.items.push({ productId, quantity });
+        cart.items.push({ 
+          productId, 
+          quantity,
+          name,
+          description,
+          price,
+          imageUrl
+        });
       }
     }
     await cart.save();
     res.status(200).send(cart);
   } catch (error) {
+    console.error('Error adding to cart:', error);
     res.status(500).send(error);
   }
 });
-
-// Other routes...
 
 const port = 3002;
 app.listen(port, () => {

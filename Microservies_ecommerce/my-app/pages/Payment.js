@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 function Payment() {
+    const router = useRouter();
+
     const [paymentDetails, setPaymentDetails] = useState({
+        totalAmount: '',
         paymentMethod: '',
         cardNumber: '',
         expiryDate: '',
@@ -25,11 +29,34 @@ function Payment() {
         });
     };
 
+    const generateOrderId = () => {
+        const timestamp = new Date().getTime();
+        const random = Math.floor(Math.random() * 1000);
+        return `${timestamp}-${random}`;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const userId = localStorage.getItem('userId');
+        const orderId = generateOrderId();
+        const totalAmount = router.query.totalAmount;
+
         try {
-            await axios.post('http://localhost:3004/payment', paymentDetails);
+            await axios.post('http://localhost:3004/payment', {
+                userId: userId,
+                orderId: orderId,
+                amount: totalAmount,
+                paymentMethod: paymentDetails.paymentMethod,
+                cardNumber: paymentDetails.cardNumber,
+                expiryDate: paymentDetails.expiryDate,
+                cvv: paymentDetails.cvv,
+                bankName: paymentDetails.bankName,
+                accountNumber: paymentDetails.accountNumber,
+                upiId: paymentDetails.upiId,
+            });
             alert('Payment successful');
+            router.push('/Product');
         } catch (error) {
             console.error('Payment failed:', error);
             alert('Payment failed.');
@@ -39,7 +66,7 @@ function Payment() {
     return (
         <div className="container">
             <nav className="w-full flex justify-between p-4 bg-chocolate text-chocolate z-50">
-                <div className="text-xxl font-bold">My E-Commerce</div>
+                <div className="text-xxl font-bold">GadgetHub</div>
                 <div className="text-xxl font-bold flex space-x-4">
                     <Link href="/" className="hover:underline">HomePage</Link>
                     <Link href="/Cart" className="hover:underline">Cart</Link>
@@ -47,7 +74,7 @@ function Payment() {
                 </div>
             </nav>
             <div className="payment-container">
-                <h2 className="heading text-center">Payments</h2>
+                <h2 className="heading text-center">Payments</h2><br></br><br></br>
                 <form onSubmit={handleSubmit}>
                     <div className="payment-methods">
                         <label>
@@ -61,6 +88,7 @@ function Payment() {
                             Cash On Delivery
                         </label>
                         <br />
+                        <br></br><br></br>
                         <label>
                             <input 
                                 type="radio" 
@@ -72,6 +100,7 @@ function Payment() {
                             Online Payment
                         </label>
                         <br />
+                        <br></br><br></br>
                         <label>
                             <input 
                                 type="radio" 
@@ -83,6 +112,7 @@ function Payment() {
                             Net Banking
                         </label>
                         <br />
+                        <br></br><br></br>
                         <label>
                             <input 
                                 type="radio" 
@@ -94,6 +124,7 @@ function Payment() {
                             Credit Card
                         </label>
                         <br />
+                        <br></br><br></br>
                         <label>
                             <input 
                                 type="radio" 
@@ -104,6 +135,7 @@ function Payment() {
                             />
                             Debit Card
                         </label>
+                        <br></br><br></br>
                         {onlinePaymentMethod && (
                             <>
                                 <br />
@@ -117,6 +149,7 @@ function Payment() {
                                     />
                                     GPay
                                 </label>
+                                <br></br>
                                 <br />
                                 <label>
                                     <input 
@@ -128,6 +161,7 @@ function Payment() {
                                     />
                                     Paytm
                                 </label>
+                                <br></br>
                                 <br />
                                 <label>
                                     <input 
@@ -139,6 +173,7 @@ function Payment() {
                                     />
                                     PhonePe
                                 </label>
+                                <br></br>
                                 <br />
                                 <label>
                                     <input 
@@ -150,6 +185,7 @@ function Payment() {
                                     />
                                     BhimUPI
                                 </label>
+                                <br></br>
                                 <br />
                                 <div>
                                     <label>UPI ID:</label>
@@ -196,15 +232,23 @@ function Payment() {
             <style jsx>{`
                 .container {
                     text-align: center;
+                    background-color: lightyellow;
+                    padding: 20px;
+                    min-height: 100vh;
+                    border: 2px;
                 }
 
                 .heading {
                     font-size: 2.5rem;
-                    margin-bottom: 20px;
                 }
 
-                .payment-container {
-                    margin-top: 40px;
+                .cart-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    width: 100%;
+                    padding: 20px;
                 }
 
                 .payment-methods {

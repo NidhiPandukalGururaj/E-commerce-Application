@@ -5,7 +5,8 @@ const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
-  inStock: { type: Boolean, default: true }
+  inStock: { type: Boolean, default: true },
+  img_url: { type: String, required: true } // Added img_url field
 });
 
 const Product = mongoose.model('Product', productSchema);
