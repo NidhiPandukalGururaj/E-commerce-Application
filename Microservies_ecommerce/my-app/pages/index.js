@@ -1,17 +1,17 @@
 import Image from "next/image";
-import { Inter } from "next/font/google";
+
 import Link from "next/link";
 
-const inter = Inter({ subsets: ["latin"] });
+
 
 export default function Home() {
   return (
     <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 bg-cover bg-no-repeat bg-center text-chocolate text-center${inter.className}`}
+      className={`flex min-h-screen flex-col items-center justify-between p-24 bg-cover bg-no-repeat bg-center text-chocolate text-center`}
       style={{ 
         backgroundImage: `url('/gad.jpeg')`,
         fontSize: '2rem',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'sans-serif',
       }}
     >
       {/* Navbar */}

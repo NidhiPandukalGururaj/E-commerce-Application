@@ -3,14 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Product } = require('./model');
-const Cart = require('../cart/model');
+const Cart = require('./cartmodel');
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://localhost:27017/productManagement', {
+mongoose.connect('mongodb://mongo:27017/productManagement', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -28,11 +28,14 @@ app.post('/products', async (req, res) => {
 app.get('/products', async (req, res) => {
   try {
     const products = await Product.find();
+    console.log('Fetched products:', products); // Debugging log
     res.status(200).send(products);
   } catch (error) {
+    console.error('Error fetching products:', error); // Error log
     res.status(500).send(error);
   }
 });
+
 
 app.post('/cart/:userId', async (req, res) => {
   const { userId } = req.params;

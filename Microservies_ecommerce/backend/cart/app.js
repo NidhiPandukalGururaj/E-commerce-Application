@@ -10,7 +10,7 @@ app.use(cors());
 app.options('*', cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://localhost/cartService', {
+mongoose.connect('mongodb://mongo:27017/cartService', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });

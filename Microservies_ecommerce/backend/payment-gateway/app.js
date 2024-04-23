@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // MongoDB connection string
-mongoose.connect('mongodb://localhost/paymentService', {
+mongoose.connect('mongodb://mongo:27017/paymentService', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
